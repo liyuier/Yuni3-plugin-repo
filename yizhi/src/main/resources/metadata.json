@@ -1,0 +1,18 @@
+{
+  "module_id": "yizhi",
+  "module_name": "要我一直吗",
+  "plugins": [
+    {
+      "id": "YaoWoYiZhi",
+      "name": "要我一直 IMAGE 吗",
+      "version": "0.0.1",
+      "description": "一直.image",
+      "tips": [
+        "向群聊发送 `/一直 {图片}` ，bot 会向群聊发送一张 “<大图> 要我一直<小图>吗” 的图片"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}

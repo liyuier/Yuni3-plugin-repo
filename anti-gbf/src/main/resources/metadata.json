@@ -1,0 +1,18 @@
+{
+  "module_id": "anti-gbf",
+  "module_name": "反gbf",
+  "plugins": [
+    {
+      "id": "AntiGbf",
+      "name": "骑空士陷阱粉碎机",
+      "version": "0.0.1",
+      "description": "警惕骑空士的陷阱",
+      "tips": [
+        "检测到消息中含有 `granbluefantasy.jp` 文本，自动警告骑空士的陷阱"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "module_id": "help",
+  "module_name": "帮助信息模块",
+  "plugins": [
+    {
+      "id": "HelpInfo",
+      "name": "帮助信息",
+      "version": "0.0.1",
+      "description": "输出帮助信息",
+      "tips": [
+        "向群聊发送 “/帮助” 可以查看帮助信息"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true,
+      "build_in": true
+    }
+  ]
+}

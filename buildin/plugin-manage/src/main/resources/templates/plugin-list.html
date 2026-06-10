@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuni - 插件列表</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", "WenQuanYi Zen Hei", sans-serif;
+        }
+
+        body {
+            background-color: #F8F9FA;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 新增：让容器仅贴合内容高度，不拉伸 */
+            padding: 20px 0 0 0; /* 关键修改：去掉底部padding，仅保留顶部20px */
+            min-height: 100vh;
+        }
+
+        /* 长图容器：极致简约 */
+        .long-img-container {
+            width: 720px;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* 标题区域：简约粉色系 */
+        .title-section {
+            background-color: #FF85A2;
+            color: #FFFFFF;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .title-section h1 {
+            font-size: 36px;
+            font-weight: 600;
+        }
+
+        /* 插件列表容器：移除底部内边距 */
+        .plugin-list {
+            padding: 24px 20px 0 20px; /* 关键修改：底部padding从20px改为0 */
+        }
+
+        /* ========== 多插件模块专属UI（强区分度设计） ========== */
+        /* 多插件模块容器：卡片化设计，独立背景+圆角+边框 */
+        .multi-plugin-module {
+            margin: 0 0 16px 0;
+            background-color: #FFF5F7;
+            border: 1px solid #FFE0E8;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* 多插件模块标题：强化视觉焦点 */
+        .module-title {
+            padding: 20px 24px;
+            background-color: #FF85A2;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 模块标题标识：放大+白色 */
+        .module-tag {
+            width: 10px;
+            height: 28px;
+            background-color: #FFFFFF;
+            border-radius: 5px;
+            margin-right: 16px;
+        }
+
+        /* 模块名称文字：白色+加粗 */
+        .module-name {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* 多插件模块内的插件项容器 */
+        .module-plugins {
+            padding: 8px 0;
+        }
+
+        /* ========== 通用插件项样式（所有情况） ========== */
+        .plugin-item {
+            display: flex;
+            align-items: center;
+            padding: 24px 24px;
+            gap: 16px;
+        }
+
+        /* 单插件项：底部浅灰分隔线 + 统一底部margin */
+        .single-plugin-item {
+            border-bottom: 1px solid #F5F5F5;
+            margin-bottom: 16px;
+        }
+
+        /* 多插件项：底部浅粉分隔线（与模块背景匹配） */
+        .multi-plugin-item {
+            border-bottom: 1px solid #FFE8EE;
+        }
+
+        /* 最后一个插件项去掉边框和margin（兼容所有场景） */
+        .plugin-list > .plugin-item:last-child {
+            border-bottom: none;
+            margin-bottom: 8px; /* 新增：保留8px底部间距，避免文字贴容器底 */
+        }
+        .module-plugins > .plugin-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 序号样式：纯数字极简版 */
+        .plugin-index {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FF85A2;
+            width: 40px;
+            flex-shrink: 0;
+        }
+
+        /* 插件信息区域 */
+        .plugin-info {
+            flex: 1;
+        }
+
+        .plugin-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+
+        .plugin-desc {
+            font-size: 16px;
+            color: #666666;
+            line-height: 1.4;
+        }
+
+        /* 开关样式：通用toggle开关 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+
+        /* 隐藏原生复选框 */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* 开关滑块 */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E9E9EB;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        /* 开关圆点 */
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        /* 开启状态的开关样式 */
+        input:checked + .slider {
+            background-color: #FF85A2;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 750px) {
+            .long-img-container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="result-container">
+    <div class="long-img-container">
+        <div class="title-section">
+            <h1>Yuni - 插件列表</h1>
+        </div>
+
+        <div class="plugin-list">
+            <th:block th:each="item : ${pluginList}">
+                <!-- 单插件项：渲染后端编号 ${item.singlePlugin.index} -->
+                <div th:if="${!item.hasModule}" class="plugin-item single-plugin-item">
+                    <div class="plugin-index" th:text="${item.singlePlugin.index}">1</div>
+                    <div class="plugin-info">
+                        <div class="plugin-name" th:text="${item.singlePlugin.name}">示例插件</div>
+                        <div class="plugin-desc" th:text="${item.singlePlugin.desc}">示例插件描述</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" th:checked="${item.singlePlugin.enabled}">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <!-- 多插件模块：渲染后端编号 ${subPlugin.index} -->
+                <div th:if="${item.hasModule}" class="multi-plugin-module">
+                    <div class="module-title">
+                        <div class="module-tag"></div>
+                        <div class="module-name" th:text="${item.modulePlugin.moduleName}">示例模块</div>
+                    </div>
+                    <div class="module-plugins">
+                        <div th:each="subPlugin : ${item.modulePlugin.subPlugins}" class="plugin-item multi-plugin-item">
+                            <!-- 直接用后端分配的编号，不再依赖stat.count -->
+                            <div class="plugin-index" th:text="${subPlugin.index}">2</div>
+                            <div class="plugin-info">
+                                <div class="plugin-name" th:text="${subPlugin.name}">示例模块下插件</div>
+                                <div class="plugin-desc" th:text="${subPlugin.desc}">示例模块下插件描述</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" th:checked="${subPlugin.enabled}">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>
+</body>
+</html>

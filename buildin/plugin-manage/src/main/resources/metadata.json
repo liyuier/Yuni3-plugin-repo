@@ -1,0 +1,24 @@
+{
+  "module_id": "plugin-manage",
+  "module_name": "插件管理模块",
+  "plugins": [
+    {
+      "id": "PluginManage",
+      "name": "插件管理入口",
+      "version": "0.0.1",
+      "description": "插件管理命令的入口",
+      "tips": [
+        "向群聊发送 “/插件 查看” 可以查看当前群聊下插件列表",
+        "向群聊发送 “/插件 查看 {插件序号}” 可以查看对应插件详情",
+        "向群聊发送 “/插件 开启 {插件序号}” 可以启用对应插件",
+        "向群聊发送 “/插件 关闭 {插件序号}” 可以禁用对应插件",
+        "向群聊发送 “/插件 重载 {插件序号}” 可以重载对应插件",
+        "向群聊发送 “/插件 重载” 可以重载全部插件"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true,
+      "build_in": true
+    }
+  ]
+}

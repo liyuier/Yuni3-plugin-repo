@@ -1,0 +1,6 @@
+【Yuni】基于 SpringBoot 实现的 OneBot 协议聊天机器人
+• 使用 "/插件 查看" 命令查看当前群聊下插件列表
+• 使用 "/插件 查看 {插件序号}" 命令查看指定插件详情
+• 代码仓库 https://github.com/liyuier/Yuni3
+• 机器人文档 https://yuni.yuier.com/
+• AI 聊天后端: 麦麦机器人 https://docs.mai-mai.org/

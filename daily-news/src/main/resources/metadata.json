@@ -1,0 +1,16 @@
+{
+  "module_id": "daily-news",
+  "module_name": "每日早报",
+  "plugins": [
+    {
+      "id": "DailyNews",
+      "name": "每日早报",
+      "version": "0.0.1",
+      "description": "每天定时发送早报",
+      "tips": [],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}

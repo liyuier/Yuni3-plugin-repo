@@ -1,0 +1,26 @@
+{
+  "module_id": "crazy-thursday",
+  "module_name": "疯狂星期四",
+  "plugins": [
+    {
+      "id": "CrazyThursday",
+      "name": "疯狂星期四",
+      "version": "0.0.1",
+      "description": "每周四随机发送疯四文案",
+      "tips": [],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    },
+    {
+      "id": "StartAtThursday",
+      "name": "疯狂星期四-重启适配",
+      "version": "0.0.1",
+      "description": "适配在周四重启时的情况",
+      "tips": [],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}

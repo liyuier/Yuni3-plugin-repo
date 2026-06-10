@@ -1,0 +1,20 @@
+{
+  "module_id": "pig-today",
+  "module_name": "今日猪猪",
+  "plugins": [
+    {
+      "id": "PigToday",
+      "name": "今日猪猪",
+      "version": "0.0.1",
+      "description": "今天你是什么猪？",
+      "tips": [
+        "向群聊发送 `/今日猪猪` ，查看自己今天是什么猪",
+        "向群聊发送 `/今日猪猪 {@someone}` ，查看群友今天是什么猪",
+        "一天内重复查看，猪设不变"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}

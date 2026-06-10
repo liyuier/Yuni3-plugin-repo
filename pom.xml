@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 统一管理一下插件，方便构建，并非真正有意义的模块项目 -->
+    <groupId>com.yuier.yuni</groupId>
+    <artifactId>yuni3-plugin-repo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>yuni3-plugin-repo</name>
+    <description>yuni3-plugin-repo</description>
+
+    <!-- 插件模块 -->
+    <modules>
+        <module>example</module>
+        <module>buildin/plugin-manage</module>
+        <module>buildin/eventmanage</module>
+        <module>daily-news</module>
+        <module>buildin/help</module>
+        <module>chieru</module>
+        <module>pig-today</module>
+        <module>setu</module>
+        <module>anti-gbf</module>
+        <module>yizhi</module>
+        <module>fortune</module>
+        <module>crazy-thursday</module>
+    </modules>
+
+</project>

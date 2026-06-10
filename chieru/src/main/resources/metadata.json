@@ -1,0 +1,33 @@
+{
+  "module_id": "chieru",
+  "module_name": "切噜语转换",
+  "plugins": [
+    {
+      "id": "ChieruTrans",
+      "name": "切噜语转换",
+      "version": "0.0.1",
+      "description": "切噜语转换",
+      "tips": [
+        "向群聊发送 “/切噜 转换 {文本}” 可以将文本转换为切噜语",
+        "向群聊发送 “/切噜 还原 {切噜语文本} 可以将切噜语还原为原始文本”",
+        "不同机器人的切噜语实现方式不同，尝试还原其他机器人生成的切噜语极大概率可能失败"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    },
+    {
+      "id": "HooTrans",
+      "name": "齁哦语转换",
+      "version": "0.0.1",
+      "description": "齁哦语转换",
+      "tips": [
+        "向群聊发送 “/齁哦 转换 {文本}” 可以将文本转换为齁哦语",
+        "向群聊发送 “/齁哦 还原 {切噜语文本} 可以将齁哦语还原为原始文本”"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}
