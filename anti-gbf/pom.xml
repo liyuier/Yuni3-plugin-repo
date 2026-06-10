@@ -8,6 +8,7 @@
         <groupId>com.yuier.yuni</groupId>
         <artifactId>yuni3</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <!-- 模块信息 -->
