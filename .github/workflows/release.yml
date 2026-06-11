@@ -40,16 +40,22 @@ jobs:
             MODULES_JSON=$(echo "$ALL" | tr ' ' '\n' | sed '/^$/d' | jq -R -s -c 'split("\n") | map(select(length>0))')
             echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
           else
-            # 用 push event 的 before/after 而非 HEAD~1，覆盖一次 push 多个 commit 的情况
             BEFORE="${{ github.event.before }}"
             AFTER="${{ github.event.after }}"
+            # 全零 SHA 表示首次 push 或基准不可用，回退到 HEAD~1
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              BEFORE="HEAD~1"
+            fi
             echo "diff range: $BEFORE .. $AFTER"
+            echo "raw diff files:"
+            git diff --name-only "$BEFORE" "$AFTER" | head -20
             CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
+            echo "matched dirs: [$CHANGED]"
             if [ -z "$CHANGED" ]; then
-              echo "no changes detected"
+              echo "no plugin module changes detected"
               echo "modules=[]" >> "$GITHUB_OUTPUT"
             else
-              echo "changed: $CHANGED"
+              echo "modules to build: $CHANGED"
               MODULES_JSON=$(echo "$CHANGED" | tr ' ' '\n' | jq -R -s -c 'split("\n") | map(select(length>0))')
               echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
             fi
