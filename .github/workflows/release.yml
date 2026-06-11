@@ -34,21 +34,20 @@ jobs:
               ALL2=$(find buildin -maxdepth 2 -name pom.xml 2>/dev/null | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
               ALL="$ALL $ALL2"
             else
-              ALL=$(echo "$INPUT" | tr ',' ' ')
+              ALL=$(echo "$INPUT" | tr ',' '\n')
             fi
             echo "manual trigger, modules: $ALL"
-            echo "modules=$(echo "$ALL" | jq -R -s -c 'split(" ") | map(select(length>0))')"
-            echo "modules=$(echo "$ALL" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
+            MODULES_JSON=$(echo "$ALL" | tr ' ' '\n' | sed '/^$/d' | jq -R -s -c 'split("\n") | map(select(length>0))')
+            echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
           else
-            # 只匹配字母/数字/-/_ 开头的目录，排除隐藏目录（.github 等）
-            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ')
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
             if [ -z "$CHANGED" ]; then
               echo "no changes detected"
               echo "modules=[]" >> "$GITHUB_OUTPUT"
             else
               echo "changed: $CHANGED"
-              echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')"
-              echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
+              MODULES_JSON=$(echo "$CHANGED" | tr ' ' '\n' | jq -R -s -c 'split("\n") | map(select(length>0))')
+              echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
             fi
           fi
 
