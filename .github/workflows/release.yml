@@ -96,10 +96,11 @@ jobs:
         id: meta
         run: |
           NAME=$(basename ${{ matrix.module }})
-          # 将构建产物重命名为 {id}.jar，方便 deploy.sh 按约定 URL 下载
-          find ${{ matrix.module }}/target -maxdepth 1 -name '*.jar' | while read jar; do
-            cp "$jar" ${{ matrix.module }}/target/${NAME}.jar
-          done
+          JAR=$(find ${{ matrix.module }}/target -maxdepth 1 -name '*.jar' -not -name '*-sources.jar' -not -name '*-javadoc.jar' | head -1)
+          TARGET="${{ matrix.module }}/target/${NAME}.jar"
+          if [ "$JAR" != "$TARGET" ]; then
+            cp "$JAR" "$TARGET"
+          fi
           echo "id=$NAME" >> "$GITHUB_OUTPUT"
 
       - name: Release
