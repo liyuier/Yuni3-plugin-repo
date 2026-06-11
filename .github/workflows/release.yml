@@ -65,6 +65,8 @@ jobs:
     needs: detect
     if: needs.detect.outputs.modules != '[]'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         module: ${{ fromJSON(needs.detect.outputs.modules) }}
