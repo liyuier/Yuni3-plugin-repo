@@ -67,12 +67,11 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Install Yuni3 parent POM
+      - name: Install Yuni3 dependencies
         run: |
           git clone --depth 1 https://github.com/liyuier/Yuni3.git /tmp/yuni3
           cd /tmp/yuni3
-          mvn install -pl yuni-dependency -N -q
-          mvn install -N -q
+          mvn install -pl yuni-plugin -am -DskipTests -q
 
       - name: Build ${{ matrix.module }}
         run: mvn package -pl ${{ matrix.module }} -DskipTests -q
