@@ -7,6 +7,12 @@ on:
       - '*/**'
       - 'buildin/*/**'
       - 'pom.xml'
+  workflow_dispatch:
+    inputs:
+      modules:
+        description: '要重建的模块（逗号分隔，留空则全部重建）'
+        required: false
+        default: ''
 
 jobs:
   detect:
@@ -16,15 +22,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
-      - name: Detect changed modules
+          fetch-depth: ${{ github.event_name == 'push' && 2 || 1 }}
+
+      - name: Determine modules to build
         id: changes
         run: |
-          # 找出所有包含 pom.xml 的目录作为独立模块
-          CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[^/]+|[^/]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ')
-          echo "changed: $CHANGED"
-          echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')"
-          echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            INPUT="${{ inputs.modules }}"
+            if [ -z "$INPUT" ]; then
+              # 未指定则构建所有包含 pom.xml 的模块
+              ALL=$(find . -name pom.xml -not -path './pom.xml' | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
+            else
+              ALL=$(echo "$INPUT" | tr ',' ' ')
+            fi
+            echo "manual trigger, modules: $ALL"
+            echo "modules=$(echo "$ALL" | jq -R -s -c 'split(" ") | map(select(length>0))')"
+            echo "modules=$(echo "$ALL" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
+          else
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[^/]+|[^/]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ')
+            if [ -z "$CHANGED" ]; then
+              echo "no changes detected"
+              echo "modules=[]" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed: $CHANGED"
+              echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')"
+              echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
+            fi
+          fi
 
   build:
     needs: detect
