@@ -82,7 +82,12 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/liyuier/Yuni3.git /tmp/yuni3
           cd /tmp/yuni3
-          mvn install -pl yuni-plugin -am -DskipTests -q
+          echo "=== Installing yuni-dependency first ==="
+          mvn install -f yuni-dependency/pom.xml
+          echo "=== Installing parent POM ==="
+          mvn install -N
+          echo "=== Installing full chain yuni-plugin ==="
+          mvn install -pl yuni-plugin -am -DskipTests
 
       - name: Build ${{ matrix.module }}
         run: mvn package -pl ${{ matrix.module }} -DskipTests -q
