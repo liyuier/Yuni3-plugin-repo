@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: ${{ github.event_name == 'push' && 2 || 1 }}
+          fetch-depth: 0
 
       - name: Determine modules to build
         id: changes
@@ -40,7 +40,11 @@ jobs:
             MODULES_JSON=$(echo "$ALL" | tr ' ' '\n' | sed '/^$/d' | jq -R -s -c 'split("\n") | map(select(length>0))')
             echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
           else
-            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
+            # 用 push event 的 before/after 而非 HEAD~1，覆盖一次 push 多个 commit 的情况
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+            echo "diff range: $BEFORE .. $AFTER"
+            CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
             if [ -z "$CHANGED" ]; then
               echo "no changes detected"
               echo "modules=[]" >> "$GITHUB_OUTPUT"
