@@ -30,8 +30,9 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             INPUT="${{ inputs.modules }}"
             if [ -z "$INPUT" ]; then
-              # 未指定则构建所有包含 pom.xml 的模块
-              ALL=$(find . -name pom.xml -not -path './pom.xml' | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
+              ALL=$(find . -maxdepth 1 -name pom.xml -not -path './pom.xml' -not -path './[.]*' | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
+              ALL2=$(find buildin -maxdepth 2 -name pom.xml 2>/dev/null | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
+              ALL="$ALL $ALL2"
             else
               ALL=$(echo "$INPUT" | tr ',' ' ')
             fi
@@ -39,7 +40,8 @@ jobs:
             echo "modules=$(echo "$ALL" | jq -R -s -c 'split(" ") | map(select(length>0))')"
             echo "modules=$(echo "$ALL" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
           else
-            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[^/]+|[^/]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ')
+            # 只匹配字母/数字/-/_ 开头的目录，排除隐藏目录（.github 等）
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ')
             if [ -z "$CHANGED" ]; then
               echo "no changes detected"
               echo "modules=[]" >> "$GITHUB_OUTPUT"
