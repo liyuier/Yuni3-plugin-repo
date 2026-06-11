@@ -1,0 +1,72 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '*/**'
+      - 'buildin/*/**'
+      - 'pom.xml'
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.changes.outputs.modules }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Detect changed modules
+        id: changes
+        run: |
+          # 找出所有包含 pom.xml 的目录作为独立模块
+          CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -oE '^(buildin/[^/]+|[^/]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ')
+          echo "changed: $CHANGED"
+          echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')"
+          echo "modules=$(echo "$CHANGED" | jq -R -s -c 'split(" ") | map(select(length>0))')" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: detect
+    if: needs.detect.outputs.modules != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{ fromJSON(needs.detect.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Install Yuni3 parent POM
+        run: |
+          git clone --depth 1 https://github.com/liyuier/Yuni3.git /tmp/yuni3
+          cd /tmp/yuni3
+          mvn install -pl yuni-dependency -N -q
+          mvn install -N -q
+
+      - name: Build ${{ matrix.module }}
+        run: mvn package -pl ${{ matrix.module }} -DskipTests -q
+
+      - name: Normalize artifact name
+        id: meta
+        run: |
+          NAME=$(basename ${{ matrix.module }})
+          # 将构建产物重命名为 {id}.jar，方便 deploy.sh 按约定 URL 下载
+          find ${{ matrix.module }}/target -maxdepth 1 -name '*.jar' | while read jar; do
+            cp "$jar" ${{ matrix.module }}/target/${NAME}.jar
+          done
+          echo "id=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.id }}
+          files: ${{ matrix.module }}/target/${{ steps.meta.outputs.id }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
