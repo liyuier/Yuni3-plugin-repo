@@ -30,7 +30,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             INPUT="${{ inputs.modules }}"
             if [ -z "$INPUT" ]; then
-              ALL=$(find . -maxdepth 1 -name pom.xml -not -path './pom.xml' -not -path './[.]*' | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
+              ALL=$(find . -maxdepth 1 -name pom.xml -not -path './pom.xml' -not -path './.*' | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
               ALL2=$(find buildin -maxdepth 2 -name pom.xml 2>/dev/null | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
               ALL="$ALL $ALL2"
             else
@@ -42,21 +42,16 @@ jobs:
           else
             BEFORE="${{ github.event.before }}"
             AFTER="${{ github.event.after }}"
-            # 全零 SHA 表示首次 push 或基准不可用，回退到 HEAD~1
             if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
               BEFORE="HEAD~1"
             fi
-            echo "diff range: $BEFORE .. $AFTER"
-            echo "raw diff files:"
-            git diff --name-only "$BEFORE" "$AFTER" | head -20
-            CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
-            echo "matched dirs: [$CHANGED]"
-            if [ -z "$CHANGED" ]; then
+            CHANGED_DIRS=$(git diff --name-only "$BEFORE" "$AFTER" | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
+            if [ -z "$CHANGED_DIRS" ]; then
               echo "no plugin module changes detected"
               echo "modules=[]" >> "$GITHUB_OUTPUT"
             else
-              echo "modules to build: $CHANGED"
-              MODULES_JSON=$(echo "$CHANGED" | tr ' ' '\n' | jq -R -s -c 'split("\n") | map(select(length>0))')
+              echo "changed: $CHANGED_DIRS"
+              MODULES_JSON=$(echo "$CHANGED_DIRS" | tr ' ' '\n' | jq -R -s -c 'split("\n") | map(select(length>0))')
               echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
             fi
           fi
@@ -84,31 +79,49 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/liyuier/Yuni3.git /tmp/yuni3
           cd /tmp/yuni3
-          echo "=== Installing yuni-dependency first ==="
-          mvn install -f yuni-dependency/pom.xml
-          echo "=== Installing parent POM ==="
-          mvn install -N
-          echo "=== Installing full chain yuni-plugin ==="
-          mvn install -pl yuni-plugin -am -DskipTests
+          mvn install -f yuni-dependency/pom.xml -q
+          mvn install -N -q
+          mvn install -pl yuni-plugin -am -DskipTests -q
 
       - name: Build ${{ matrix.module }}
-        run: mvn package -pl ${{ matrix.module }} -DskipTests -q
+        run: |
+          # 在 plugin-repo 上层创建 plugins/ 目录，POM 的 ../../plugins/{id} 指向这里
+          mkdir -p ../plugins
+          mvn package -pl ${{ matrix.module }} -DskipTests -q
 
-      - name: Normalize artifact name
+      - name: Package plugin artifact
         id: meta
         run: |
-          NAME=$(basename ${{ matrix.module }})
-          JAR=$(find ${{ matrix.module }}/target -maxdepth 1 -name '*.jar' -not -name '*-sources.jar' -not -name '*-javadoc.jar' | head -1)
-          TARGET="${{ matrix.module }}/target/${NAME}.jar"
-          if [ "$JAR" != "$TARGET" ]; then
-            cp "$JAR" "$TARGET"
+          MODULE="${{ matrix.module }}"
+          ID=$(basename "$MODULE")
+          PKG_DIR="/tmp/pkg/$ID"
+          mkdir -p "$PKG_DIR"
+
+          # JAR — 从 target/ 取
+          find "$MODULE/target" -maxdepth 1 -name '*.jar' -not -name '*-sources.jar' -not -name '*-javadoc.jar' | while read jar; do
+            cp "$jar" "$PKG_DIR/"
+          done
+
+          # 资源文件、metadata.json — 从 POM 构建产出的 ../../plugins/{id}/ 取
+          RES_DIR="../plugins/$ID"
+          if [ -d "$RES_DIR" ]; then
+            cp -r "$RES_DIR"/* "$PKG_DIR/" 2>/dev/null || true
           fi
-          echo "id=$NAME" >> "$GITHUB_OUTPUT"
+
+          echo "=== Package contents ==="
+          ls -la "$PKG_DIR/"
+
+          # 打包为 zip（部署端直接 unzip 到 plugins/{id}/）
+          cd /tmp/pkg
+          zip -r "$ID.zip" "$ID/"
+          echo "zip=/tmp/pkg/$ID.zip"
+
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.meta.outputs.id }}
-          files: ${{ matrix.module }}/target/${{ steps.meta.outputs.id }}.jar
+          files: /tmp/pkg/${{ steps.meta.outputs.id }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
