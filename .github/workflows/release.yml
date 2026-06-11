@@ -30,13 +30,16 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             INPUT="${{ inputs.modules }}"
             if [ -z "$INPUT" ]; then
-              ALL=$(find . -maxdepth 1 -name pom.xml -not -path './pom.xml' -not -path './.*' | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
-              ALL2=$(find buildin -maxdepth 2 -name pom.xml 2>/dev/null | sed 's|/pom.xml||; s|^\./||' | sort -u | tr '\n' ' ')
-              ALL="$ALL $ALL2"
+              # 从 pom.xml <modules> 读取全量插件列表
+              ALL=$(xmlstarlet sel -N x=http://maven.apache.org/POM/4.0.0 -t -v "//x:modules/x:module" pom.xml 2>/dev/null | tr '\n' ' ')
+              if [ -z "$ALL" ]; then
+                # fallback: 用 grep 解析 modules
+                ALL=$(sed -n '/<modules>/,/<\/modules>/p' pom.xml | grep '<module>' | sed 's/.*<module>//;s/<\/module>.*//' | tr '\n' ' ')
+              fi
             else
               ALL=$(echo "$INPUT" | tr ',' '\n')
             fi
-            echo "manual trigger, modules: $ALL"
+            echo "all modules: $ALL"
             MODULES_JSON=$(echo "$ALL" | tr ' ' '\n' | sed '/^$/d' | jq -R -s -c 'split("\n") | map(select(length>0))')
             echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
           else
@@ -45,13 +48,22 @@ jobs:
             if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
               BEFORE="HEAD~1"
             fi
+            # 从 pom.xml 取全量列表，再与 git diff 交集
+            ALL_MODS=$(sed -n '/<modules>/,/<\/modules>/p' pom.xml | grep '<module>' | sed 's/.*<module>//;s/<\/module>.*//' | tr '\n' ' ')
             CHANGED_DIRS=$(git diff --name-only "$BEFORE" "$AFTER" | grep -oE '^(buildin/[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+)/' | sed 's|/$||' | sort -u | tr '\n' ' ' | xargs)
             if [ -z "$CHANGED_DIRS" ]; then
               echo "no plugin module changes detected"
               echo "modules=[]" >> "$GITHUB_OUTPUT"
             else
-              echo "changed: $CHANGED_DIRS"
-              MODULES_JSON=$(echo "$CHANGED_DIRS" | tr ' ' '\n' | jq -R -s -c 'split("\n") | map(select(length>0))')
+              # 只构建同时出现在 ALL_MODS 和 CHANGED_DIRS 中的模块
+              FILTERED=""
+              for m in $ALL_MODS; do
+                for d in $CHANGED_DIRS; do
+                  [ "$m" = "$d" ] && FILTERED="$FILTERED $m"
+                done
+              done
+              echo "changed: $FILTERED"
+              MODULES_JSON=$(echo "$FILTERED" | tr ' ' '\n' | sed '/^$/d' | jq -R -s -c 'split("\n") | map(select(length>0))')
               echo "modules=$MODULES_JSON" >> "$GITHUB_OUTPUT"
             fi
           fi
@@ -97,9 +109,11 @@ jobs:
           PKG_DIR="/tmp/pkg/$ID"
           mkdir -p "$PKG_DIR"
 
-          # JAR — 从 target/ 取
-          find "$MODULE/target" -maxdepth 1 -name '*.jar' -not -name '*-sources.jar' -not -name '*-javadoc.jar' | while read jar; do
-            cp "$jar" "$PKG_DIR/"
+          # JAR — 取主构件（排除 sources/javadoc 及同名拷贝）
+          find "$MODULE/target" -maxdepth 1 -name '*.jar' \
+            -not -name '*-sources.jar' -not -name '*-javadoc.jar' \
+            -not -name "${ID}.jar" | while read jar; do
+            cp "$jar" "$PKG_DIR/${ID}.jar"
           done
 
           # 资源文件、metadata.json — 从 POM 构建产出的 ../../plugins/{id}/ 取
