@@ -1,3 +1,10 @@
 target/
 *.class
 *.jar
+
+
+########################
+# 各插件项目自行排除的文件
+########################
+
+steam/src/main/resources/steam_api_key.json

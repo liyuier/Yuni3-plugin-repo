@@ -1,0 +1,29 @@
+{
+  "module_id": "steam",
+  "module_name": "steam 相关功能",
+  "plugins": [
+    {
+      "id": "steamstatus.MemberSteamStatus",
+      "name": "群友 steam 游戏状态监控",
+      "version": "0.0.1",
+      "description": "监控群友的 steam 游戏状态",
+      "tips": [],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    },
+    {
+      "id": "steamstatus.UserRegisterSteamId",
+      "name": "绑定/解绑 steam id",
+      "version": "0.0.1",
+      "description": "群友绑定/解绑 steam id",
+      "tips": [
+        "向群聊发送 `/steam 绑定id {steam id}` 命令绑定 steam id",
+        "向群聊发送 `/steam 解绑id` 命令解绑 steam id"
+      ],
+      "author": "Yuier me@yuier.com",
+      "dependencies": [],
+      "default_enable": true
+    }
+  ]
+}

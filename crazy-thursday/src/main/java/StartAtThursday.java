@@ -44,7 +44,7 @@ public class StartAtThursday extends ImmediatePlugin {
                 return;
             }
             Long 当前时间 = System.currentTimeMillis();
-            RedisCache redisCache = PluginUtils.deserialize((String) RedisUtil.get(RedisCache.REDIS_KEY), RedisCache.class);
+            RedisCache redisCache = PluginUtils.deserialize((String) RedisUtil.get(RedisCache.REDIS_KEY).orElse(null), RedisCache.class);
             assert redisCache != null;
             List<Long> 发送文案的间隔时间 = CrazyThursdayUtil.计算等待间隔(redisCache.getTimePoints(), 当前时间);
             for (Long 间隔 : 发送文案的间隔时间) {

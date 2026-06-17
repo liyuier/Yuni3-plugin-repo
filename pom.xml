@@ -27,6 +27,7 @@
         <module>fortune</module>
         <module>crazy-thursday</module>
         <module>maimai</module>
+        <module>steam</module>
     </modules>
 
 </project>

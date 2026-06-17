@@ -51,7 +51,7 @@
                         <configuration>
                             <target>
                                 <!-- dir 不存在时自动跳过，不会报错 -->
-                                <delete dir="${project.basedir}/../../plugins/${project.artifactId}" />
+                                <delete dir="${project.basedir}/../../../plugins/${project.artifactId}" />
                             </target>
                         </configuration>
                     </execution>

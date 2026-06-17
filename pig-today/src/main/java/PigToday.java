@@ -77,7 +77,7 @@ public class PigToday extends CommandPlugin {
         String targetQqStr = String.valueOf(targetQq);
         // 先去缓存里看一看有没有
         if (RedisUtil.exists(PIGTODAY_CACHE_KEY)) {
-            Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(PIGTODAY_CACHE_KEY);
+            Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(PIGTODAY_CACHE_KEY).orElse(null);
             if (pigTodayMap != null && pigTodayMap.containsKey(targetQqStr)) {
                 PigTodayCache pigTodayCache = PluginUtils.deserialize(pigTodayMap.get(targetQqStr), PigTodayCache.class);
                 assert pigTodayCache != null;
@@ -94,7 +94,7 @@ public class PigToday extends CommandPlugin {
         Random random = new Random();
         PigImageListElement pigImageData = pigImageList.getImages().get(random.nextInt(pigImageList.getTotal()));
         // 缓存起来
-        Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(PIGTODAY_CACHE_KEY);
+        Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(PIGTODAY_CACHE_KEY).orElse(null);
         PigTodayCache pigTodayCache = new PigTodayCache(
                 pigImageData.getTitle(),
                 pigImageData.getFilename(),

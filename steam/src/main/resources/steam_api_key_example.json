@@ -1,0 +1,3 @@
+{
+  "apikey": "把引号里的这行字改成 https://steamcommunity.com/dev/apikey 这里获取的自己的 API key ；再把文件重命名为 steam_api_key.json"
+}

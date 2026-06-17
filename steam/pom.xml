@@ -8,14 +8,14 @@
         <groupId>com.yuier.yuni</groupId>
         <artifactId>yuni3</artifactId>
         <version>0.1.0</version>
-        <relativePath>../../../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <!-- 模块信息 -->
-    <artifactId>plugin-manage</artifactId>
-    <version>0.1.0</version>
-    <name>plugin-manage</name>
-    <description>插件管理</description>
+    <artifactId>steam</artifactId>
+    <version>0.0.1</version>
+    <name>steam</name>
+    <description>steam</description>
 
     <dependencies>
 
@@ -25,6 +25,7 @@
             <artifactId>yuni-plugin</artifactId>
             <version>0.1.0</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -45,7 +46,7 @@
                         <configuration>
                             <target>
                                 <!-- dir 不存在时自动跳过，不会报错 -->
-                                <delete dir="${project.basedir}/../../../plugins/${project.artifactId}" />
+                                <delete dir="${project.basedir}/../../plugins/${project.artifactId}" />
                             </target>
                         </configuration>
                     </execution>
@@ -69,7 +70,7 @@
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>${project.artifactId}</artifactId>
                                     <version>${project.version}</version>
-                                    <outputDirectory>../../../plugins/${project.artifactId}</outputDirectory>
+                                    <outputDirectory>../../plugins/${project.artifactId}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -94,7 +95,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>../../../plugins/${project.artifactId}</outputDirectory> <!-- 目标目录 -->
+                            <outputDirectory>../../plugins/${project.artifactId}</outputDirectory> <!-- 目标目录 -->
                             <resources>
                                 <resource>
                                     <directory>src/main/resources</directory> <!-- 源目录 -->
