@@ -6,7 +6,7 @@
     <!-- 统一管理一下插件，方便构建，并非真正有意义的模块项目 -->
     <groupId>com.yuier.yuni</groupId>
     <artifactId>yuni3-plugin-repo</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <name>yuni3-plugin-repo</name>

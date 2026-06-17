@@ -7,13 +7,13 @@
     <parent>
         <groupId>com.yuier.yuni</groupId>
         <artifactId>yuni3</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <!-- 模块信息 -->
     <artifactId>event-manage</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>event-manage</name>
     <description>通知、请求、元事件处理</description>
 
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.yuier.yuni</groupId>
             <artifactId>yuni-plugin</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf</groupId>
