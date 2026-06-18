@@ -77,9 +77,9 @@ public class SteamStatusUtil {
 
     // 根据 steamid 获取当前用户状态
     public static SinglePlayerSummary getPlayerStatusBySteamId(String steamId) {
-        String statusJSon = (String) RedisHelper.getPlayerStatusMap().get(steamId);
-        SinglePlayerSummary playerSummer = PluginUtils.deserialize(statusJSon, SinglePlayerSummary.class);
-        return playerSummer;
+        Object cached = RedisHelper.getPlayerStatusMap().get(steamId);
+        if (cached == null) return null;
+        return PluginUtils.deserialize((String) cached, SinglePlayerSummary.class);
     }
 
     // 添加 steamid 到 Redis 中
