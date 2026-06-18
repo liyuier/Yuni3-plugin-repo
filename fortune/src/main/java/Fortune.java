@@ -51,7 +51,7 @@ public class Fortune extends CommandPlugin {
         Long userId = eventContext.getUserId();
         // 先去缓存里看一看有没有
         if (RedisUtil.exists(FORTUNE_TODAY_CACHE_KEY)) {
-            Map<String, String> fortuneTodayMap = (Map<String, String>) RedisUtil.get(FORTUNE_TODAY_CACHE_KEY);
+            Map<String, String> fortuneTodayMap = (Map<String, String>) RedisUtil.get(FORTUNE_TODAY_CACHE_KEY).orElse(null);
             if (fortuneTodayMap != null && fortuneTodayMap.containsKey(userId.toString())) {
                 FortuneTodayCache fortuneTodayCache = PluginUtils.deserialize(fortuneTodayMap.get(userId.toString()), FortuneTodayCache.class);
                 assert fortuneTodayCache != null;
@@ -95,13 +95,13 @@ public class Fortune extends CommandPlugin {
                     .addAll(buildFortuneMessage(fortuneTodayCache))
                     .addReply(String.valueOf(sendMessage.getMessageId())));
             // 缓存起来
-            Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(FORTUNE_TODAY_CACHE_KEY);
+            Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(FORTUNE_TODAY_CACHE_KEY).orElse(null);
             pigTodayMap.put(userId.toString(), PluginUtils.serialize(fortuneTodayCache));
             RedisUtil.set(FORTUNE_TODAY_CACHE_KEY, pigTodayMap);
             return;
         }
         // 缓存起来
-        Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(FORTUNE_TODAY_CACHE_KEY);
+        Map<String, String> pigTodayMap = (Map<String, String>) RedisUtil.get(FORTUNE_TODAY_CACHE_KEY).orElse(null);
         pigTodayMap.put(userId.toString(), PluginUtils.serialize(fortuneTodayCache));
         RedisUtil.set(FORTUNE_TODAY_CACHE_KEY, pigTodayMap);
     }
