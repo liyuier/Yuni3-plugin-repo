@@ -21,4 +21,5 @@ public class SinglePlayerSummary {
     private String personaname;
     private String gameextrainfo;
     private String gameid;
+    private String gameChineseName;
 }

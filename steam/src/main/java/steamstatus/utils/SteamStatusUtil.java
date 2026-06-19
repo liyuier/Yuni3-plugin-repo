@@ -11,6 +11,7 @@ import steamstatus.model.SinglePlayerSummary;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -103,5 +104,38 @@ public class SteamStatusUtil {
     // 刷新 id-status
     public static void refreshIdStatus(SinglePlayerSummary 玩家状态) {
         RedisHelper.refreshIdStatus(玩家状态.getSteamid(), PluginUtils.serialize(玩家状态));
+    }
+
+    public static void setGameChineseName(SinglePlayerSummary playerSummer) {
+        if (playerSummer == null || playerSummer.getGameChineseName() != null || playerSummer.getGameid() == null) {
+            return;
+        }
+        String url = "https://store.steampowered.com/api/appdetails"
+                + "?appids=" + playerSummer.getGameid()
+                + "&l=schinese"
+                + "&filters=basic";
+        @SuppressWarnings("rawtypes")
+        Map responseMap = PluginUtils.simpleGet(url, Map.class);
+        if (responseMap == null) {
+            playerSummer.setGameChineseName(playerSummer.getGameextrainfo());
+            return;
+        }
+        Object appObj = responseMap.get(playerSummer.getGameid());
+        if (!(appObj instanceof Map)) {
+            playerSummer.setGameChineseName(playerSummer.getGameextrainfo());
+            return;
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, Object> appData = (Map<String, Object>) appObj;
+        Object successObj = appData.get("success");
+        if (successObj instanceof Boolean && (Boolean) successObj) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> data = (Map<String, Object>) appData.get("data");
+            if (data != null && data.get("name") != null) {
+                playerSummer.setGameChineseName((String) data.get("name"));
+                return;
+            }
+        }
+        playerSummer.setGameChineseName(playerSummer.getGameextrainfo());
     }
 }

@@ -75,6 +75,8 @@ public class MemberSteamStatus extends ScheduledPlugin {
 
     // 针对不同状态变化进行差分
     private void checkAndReportStatusChange(SinglePlayerSummary 之前的状态, SinglePlayerSummary 新的状态) {
+        SteamStatusUtil.setGameChineseName(之前的状态);
+        SteamStatusUtil.setGameChineseName(新的状态);
         if (之前的状态 == null) {
             // 新记录且状态为在游戏
             if (新的状态.getGameid() != null) {
@@ -115,8 +117,8 @@ public class MemberSteamStatus extends ScheduledPlugin {
                 String groupMemberName = EventLogUtil.getGroupMemberName(groupId, userId);
                 bot.sendMessage(MessageTarget.group(groupId), new MessageChain(
                         "群友 " + groupMemberName +
-                                "(Steam id: " + 之前的状态.getPersonaname() + ") 不再游玩: " + 之前的状态.getGameextrainfo() +
-                                " ; 正在游玩: " + 新的状态.getGameextrainfo()
+                                "(Steam id: " + 之前的状态.getPersonaname() + ") 不再游玩: " + 之前的状态.getGameChineseName() +
+                                " ; 正在游玩: " + 新的状态.getGameChineseName()
                 ));
             }
         });
@@ -136,7 +138,7 @@ public class MemberSteamStatus extends ScheduledPlugin {
                 YuniBot bot = PluginUtils.getYuniBot();
                 String groupMemberName = EventLogUtil.getGroupMemberName(groupId, userId);
                 bot.sendMessage(MessageTarget.group(groupId), new MessageChain(
-                        "群友 " + groupMemberName + "(Steam id: " + 之前的状态.getPersonaname() + ") 不再游玩: " + 之前的状态.getGameextrainfo()
+                        "群友 " + groupMemberName + "(Steam id: " + 之前的状态.getPersonaname() + ") 不再游玩: " + 之前的状态.getGameChineseName()
                 ));
             }
         });
@@ -155,7 +157,7 @@ public class MemberSteamStatus extends ScheduledPlugin {
                 YuniBot bot = PluginUtils.getYuniBot();
                 String groupMemberName = EventLogUtil.getGroupMemberName(groupId, userId);
                 bot.sendMessage(MessageTarget.group(groupId), new MessageChain(
-                        "群友 " + groupMemberName + "(Steam id: " + 新的状态.getPersonaname() + ") 正在游玩: " + 新的状态.getGameextrainfo()
+                        "群友 " + groupMemberName + "(Steam id: " + 新的状态.getPersonaname() + ") 正在游玩: " + 新的状态.getGameChineseName()
                 ));
             }
         });
