@@ -46,7 +46,7 @@ public class SteamStatusUtil {
 
     // 根据 steamid 获取用户 id
     public static Long getUserIdBySteamId(String steamId) {
-        return (Long) RedisHelper.getIdMap().get(steamId);
+        return Long.parseLong(RedisHelper.getIdMap().get(steamId).toString());  // 有的时候这个值会莫名其妙地变成 Integer，所以需要稳定转换为 Long
     }
 
     // 初始化用户状态
