@@ -28,6 +28,7 @@
         <module>crazy-thursday</module>
         <module>maimai</module>
         <module>steam</module>
+        <module>mcmanage</module>
     </modules>
 
 </project>
