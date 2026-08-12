@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @Title: GroupMcServers
+ * @Title: GroupMcServer
  * @Author yuier
  * @Package db
  * @Date 2026/8/12 19:59
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GroupMcServers {
+public class GroupMcServer {
     @Id
     private Long id;
     // 群组 ID

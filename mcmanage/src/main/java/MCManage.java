@@ -5,7 +5,7 @@ import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
 import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
-import db.GroupMcServers;
+import db.GroupMcServer;
 
 import static utils.Constant.*;
 
@@ -21,7 +21,6 @@ public class MCManage extends CommandPlugin {
 
     private static final CommandNode ROOT = CommandNode.builder(安慕希)
             .description("MC 服务器管理")
-            .requiresChild()
             .arg(ArgDef.optional(服务器名称, "MC 服务器名称"))
             .child(CommandNode.builder(添加)
                     .description("添加 MC 服务器")
@@ -54,12 +53,20 @@ public class MCManage extends CommandPlugin {
         CommandResult commandResult = eventContext.getCommandResult();
         if (commandResult.hasChild(添加)) {
             MCServer.addMCServer(eventContext);
+        } else if (commandResult.hasChild(删除)) {
+            MCServer.deleteMCServer(eventContext);
+        } else if (commandResult.hasChild(修改名称)) {
+            MCServer.verifyMCServerName(eventContext);
+        } else if (commandResult.hasChild(修改地址)) {
+            MCServer.verifyMCServerAddr(eventContext);
+        } else {
+            MCStatus.mcServerStatus(eventContext);
         }
     }
 
     @Override
     public void initialize() {
         // 建表 + 注册
-        PluginUtils.registerEntity(GroupMcServers.class);
+        PluginUtils.registerEntity(GroupMcServer.class);
     }
 }
