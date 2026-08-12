@@ -1,16 +1,14 @@
-import com.yuier.yuni.core.model.message.segment.TextSegment;
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.event.detector.message.command.CommandDetector;
-import com.yuier.yuni.event.detector.message.command.model.CommandBuilder;
-import com.yuier.yuni.core.event.matched.CommandMatched;
-import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
+import com.yuier.yuni.core.event.matched.CommandResult;
+import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.model.ArgDef;
+import com.yuier.yuni.event.detector.message.command.model.CommandNode;
+import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import util.TransMap;
 import util.TransferUtil;
 
 import java.util.List;
-
-import static com.yuier.yuni.core.enums.CommandArgRequireType.PLAIN;
 
 /**
  * @Title: HooTrans
@@ -19,58 +17,59 @@ import static com.yuier.yuni.core.enums.CommandArgRequireType.PLAIN;
  * @Date 2026/1/12 17:56
  * @description: 齁哦哦转换
  */
-
-public class HooTrans extends CommandPlugin {
+public class HooTrans extends CommandNodePlugin {
 
     public static final String HOO_TRANS = "齁哦";
-    public static final String HOO_TRANS_ENCODED_OPTION = "转换";
+    public static final String HOO_TRANS_ENCODED = "转换";
+    public static final String HOO_TRANS_ENCODED_ARG = "raw_words_of_hoo";
+    public static final String HOO_TRANS_DECODED = "还原";
+    public static final String HOO_TRANS_DECODED_ARG = "hoo_words";
 
-    public static final String HOO_TRANS_DECODED_OPTION = "还原";
+    private static final CommandNode ROOT = CommandNode.builder(HOO_TRANS)
+            .description("齁哦语编码/解码")
+            .child(CommandNode.builder(HOO_TRANS_ENCODED)
+                    .description("齁哦语编码")
+                    .arg(ArgDef.required(HOO_TRANS_ENCODED_ARG, "齁哦语编码", com.yuier.yuni.core.enums.CommandArgRequireType.PLAIN))
+                    .build())
+            .child(CommandNode.builder(HOO_TRANS_DECODED)
+                    .description("齁哦语解码")
+                    .arg(ArgDef.required(HOO_TRANS_DECODED_ARG, "齁哦语解码", com.yuier.yuni.core.enums.CommandArgRequireType.PLAIN))
+                    .build())
+            .build();
 
     @Override
-    public CommandDetector getDetector() {
-        return new CommandDetector(CommandBuilder.create(HOO_TRANS)
-                .addOptionWithRequiredArg(HOO_TRANS_ENCODED_OPTION, "raw_words_of_hoo", "齁哦语编码", PLAIN)
-                .addOptionWithRequiredArg(HOO_TRANS_DECODED_OPTION, "hoo_words", "齁哦语解码", PLAIN)
-                .build());
+    public CommandNodeDetector getDetector() {
+        return new CommandNodeDetector(ROOT);
     }
 
     @Override
     public void execute(YuniMessageEvent eventContext) {
-        CommandMatched commandMatched = eventContext.getCommandMatched();
-        if (commandMatched.hasOption(HOO_TRANS_ENCODED_OPTION)) {  // 齁哦语编码指令
-            transferToHoo(eventContext, commandMatched);
+        CommandResult result = eventContext.getCommandResult();
+
+        if (result.hasChild(HOO_TRANS_ENCODED)) {
+            transferToHoo(eventContext, result.getChild(HOO_TRANS_ENCODED));
         }
-        if (commandMatched.hasOption(HOO_TRANS_DECODED_OPTION)) {  // 齁哦语解码指令
-            transferToPlain(eventContext, commandMatched);
+        if (result.hasChild(HOO_TRANS_DECODED)) {
+            transferToPlain(eventContext, result.getChild(HOO_TRANS_DECODED));
         }
     }
 
-    private void transferToHoo(YuniMessageEvent eventContext, CommandMatched commandMatched) {
-        // 获取明文
-        TextSegment hooRawWordSegment = (TextSegment) commandMatched.getOptionRequiredArgValue(HOO_TRANS_ENCODED_OPTION);
-        String hooRawWords = hooRawWordSegment.getText();
-        // 获取映射表，翻译为齁哦语言
+    private void transferToHoo(YuniMessageEvent eventContext, CommandResult encodeCmd) {
+        String rawWords = encodeCmd.getArg(HOO_TRANS_ENCODED_ARG).asText();
         TransMap transMap = PluginUtils.loadJsonConfigFromPlugin("trans-map.json", TransMap.class, this.getClass());
         List<String> hooMap = transMap.getHoo();
-        String hooCode = TransferUtil.encode(hooRawWords, hooMap);
-        // 开头加一个 "齁"
+        String hooCode = TransferUtil.encode(rawWords, hooMap);
         eventContext.getChatSession().response(hooMap.get(0) + hooCode);
     }
 
-    private void transferToPlain(YuniMessageEvent eventContext, CommandMatched commandMatched) {
-        // 获取明文
-        TextSegment hooWordSegment = (TextSegment) commandMatched.getOptionRequiredArgValue(HOO_TRANS_DECODED_OPTION);
-        String hooWords = hooWordSegment.getText();
-        // 获取映射表
+    private void transferToPlain(YuniMessageEvent eventContext, CommandResult decodeCmd) {
+        String hooWords = decodeCmd.getArg(HOO_TRANS_DECODED_ARG).asText();
         TransMap transMap = PluginUtils.loadJsonConfigFromPlugin("trans-map.json", TransMap.class, this.getClass());
         List<String> hooMap = transMap.getHoo();
-        // 检查开头是否有齁哦语标识
         if (!hooWords.startsWith(hooMap.get(0))) {
             eventContext.getChatSession().response("非法齁哦语文本，开头缺少标识符 " + hooMap.get(0));
             return;
         }
-        // 去掉开头标识符，进行解码
         try {
             String rawWords = TransferUtil.decode(hooWords.substring(hooMap.get(0).length()), hooMap);
             eventContext.getChatSession().response(rawWords);
