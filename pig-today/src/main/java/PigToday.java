@@ -5,7 +5,7 @@ import com.yuier.yuni.core.model.message.segment.ImageSegment;
 import com.yuier.yuni.core.util.RedisUtil;
 import com.yuier.yuni.core.event.YuniMessageEvent;
 import com.yuier.yuni.core.event.matched.CommandResult;
-import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.CommandDetector;
 import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
 import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
@@ -43,8 +43,8 @@ public class PigToday extends CommandPlugin {
             .build();
 
     @Override
-    public CommandNodeDetector getDetector() {
-        return new CommandNodeDetector(ROOT);
+    public CommandDetector getDetector() {
+        return new CommandDetector(ROOT);
     }
 
     @Override
