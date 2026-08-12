@@ -1,9 +1,9 @@
 import com.yuier.yuni.core.model.message.MessageChain;
 import com.yuier.yuni.core.model.message.segment.ImageSegment;
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.event.detector.message.command.CommandDetector;
-import com.yuier.yuni.event.detector.message.command.model.CommandBuilder;
-import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
+import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.model.CommandNode;
+import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import entity.ApiResponseSetu;
 import entity.LoliconApiResponse;
@@ -18,13 +18,14 @@ import java.util.HashMap;
  * @description: 色图模块
  */
 
-public class Setu extends CommandPlugin {
+public class Setu extends CommandNodePlugin {
 
     private static final String LOLICON_API_V2 = "https://api.lolicon.app/setu/v2";
+    private static final CommandNode ROOT = CommandNode.builder("色图").build();
 
     @Override
-    public CommandDetector getDetector() {
-        return new CommandDetector(CommandBuilder.create("色图").build());
+    public CommandNodeDetector getDetector() {
+        return new CommandNodeDetector(ROOT);
     }
 
     @Override

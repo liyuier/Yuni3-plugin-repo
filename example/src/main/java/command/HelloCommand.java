@@ -2,9 +2,9 @@ package command;
 
 import com.yuier.yuni.core.bot.MessageSentResult;
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.event.detector.message.command.CommandDetector;
-import com.yuier.yuni.event.detector.message.command.model.CommandBuilder;
-import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
+import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.model.CommandNode;
+import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
 
 /**
  * @Title: command.HelloCommand
@@ -14,7 +14,9 @@ import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
  * @description:
  */
 
-public class HelloCommand extends CommandPlugin {
+public class HelloCommand extends CommandNodePlugin {
+
+    private static final CommandNode ROOT = CommandNode.builder("test").build();
 
     @Override
     public void execute(YuniMessageEvent eventContext) {
@@ -22,8 +24,8 @@ public class HelloCommand extends CommandPlugin {
     }
 
     @Override
-    public CommandDetector getDetector() {
-        return new CommandDetector(CommandBuilder.create("test").build());
+    public CommandNodeDetector getDetector() {
+        return new CommandNodeDetector(ROOT);
     }
 
 }

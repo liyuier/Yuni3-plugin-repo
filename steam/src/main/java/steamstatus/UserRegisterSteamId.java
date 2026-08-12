@@ -1,11 +1,11 @@
 package steamstatus;
 
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.core.event.matched.CommandMatched;
-import com.yuier.yuni.core.model.message.segment.TextSegment;
-import com.yuier.yuni.event.detector.message.command.CommandDetector;
-import com.yuier.yuni.event.detector.message.command.model.CommandBuilder;
-import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
+import com.yuier.yuni.core.event.matched.CommandResult;
+import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.model.ArgDef;
+import com.yuier.yuni.event.detector.message.command.model.CommandNode;
+import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
 import steamstatus.db.DBHelper;
 import steamstatus.db.UserSteamId;
 import steamstatus.utils.RedisHelper;
@@ -21,33 +21,41 @@ import java.util.List;
  * @description: 用户绑定 steam id
  */
 
-public class UserRegisterSteamId extends CommandPlugin {
+public class UserRegisterSteamId extends CommandNodePlugin {
 
     private static final String STEAM = "steam";
     private static final String 绑定ID = "绑定id";
     private static final String 解绑ID = "解绑id";
     private static final String ID参数 = "ID参数";
 
+    private static final CommandNode ROOT = CommandNode.builder(STEAM)
+            .description("Steam ID 绑定/解绑")
+            .child(CommandNode.builder(绑定ID)
+                    .description("绑定 steam id")
+                    .arg(ArgDef.required(ID参数, "steam id"))
+                    .build())
+            .child(CommandNode.builder(解绑ID)
+                    .description("解绑 steam id")
+                    .build())
+            .build();
+
     @Override
-    public CommandDetector getDetector() {
-        return new CommandDetector(CommandBuilder.create(STEAM)
-                .addOptionWithRequiredArg(绑定ID, ID参数, "steam id")
-                .addOption(解绑ID)
-                .build());
+    public CommandNodeDetector getDetector() {
+        return new CommandNodeDetector(ROOT);
     }
 
     @Override
     public void execute(YuniMessageEvent eventContext) {
-        CommandMatched commandMatched = eventContext.getCommandMatched();
-        if (commandMatched.hasOption(解绑ID)) {
-            unbindSteamId(eventContext, commandMatched);
+        CommandResult result = eventContext.getCommandResult();
+        if (result.hasChild(解绑ID)) {
+            unbindSteamId(eventContext);
         }
-        if (commandMatched.hasOption(绑定ID)) {
-            bindSteamId(eventContext, commandMatched);
+        if (result.hasChild(绑定ID)) {
+            bindSteamId(eventContext, result.getChild(绑定ID));
         }
     }
 
-    private void unbindSteamId(YuniMessageEvent eventContext, CommandMatched commandMatched) {
+    private void unbindSteamId(YuniMessageEvent eventContext) {
         Long userId = eventContext.getUserId();
         List<UserSteamId> byUserId = DBHelper.findByUserId(userId);
         if (byUserId == null || byUserId.isEmpty()) {
@@ -59,9 +67,9 @@ public class UserRegisterSteamId extends CommandPlugin {
         }
     }
 
-    private void bindSteamId(YuniMessageEvent eventContext, CommandMatched commandMatched) {
+    private void bindSteamId(YuniMessageEvent eventContext, CommandResult bindCmd) {
         // 获取 steam id
-        String steamId = ((TextSegment) commandMatched.getOptionRequiredArgValue(绑定ID)).getText();
+        String steamId = bindCmd.getArg(ID参数).asText();
         // 获取用户 id
         Long userId = eventContext.getUserId();
         List<UserSteamId> byUserId = DBHelper.findByUserId(userId);

@@ -1,8 +1,7 @@
+import com.yuier.yuni.core.event.YuniMessageEvent;
+import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.core.model.message.MessageChain;
 import com.yuier.yuni.core.model.message.segment.ImageSegment;
-import com.yuier.yuni.core.model.message.segment.TextSegment;
-import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.core.event.matched.CommandMatched;
 import com.yuier.yuni.plugin.manage.PluginContainer;
 import com.yuier.yuni.plugin.manage.enable.PluginEnableProcessor;
 import com.yuier.yuni.plugin.model.PluginInstance;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static util.PluginManagerConstants.PLUGIN_MANAGE_VIEW;
+import static util.PluginManagerConstants.PLUGIN_MANAGE_VIEW_SEQ;
 
 /**
  * @Title: PluginShow
@@ -130,13 +130,12 @@ public class PluginShow {
     /**
      * 显示指定插件详情
      * @param eventContext  消息事件上下文
-     * @param commandMatched  命令匹配结果
+     * @param result  命令匹配结果
      * @param pluginManage  插件管理插件，用于一些需求插件本身的操作
      */
-    public void showPluginDetail(YuniMessageEvent eventContext, CommandMatched commandMatched, PluginManage pluginManage) {
+    public void showPluginDetail(YuniMessageEvent eventContext, CommandResult result, PluginManage pluginManage) {
         // 先解析出要查看的插件序号
-        TextSegment pluginSeqSegment = (TextSegment) commandMatched.getOptionOptionalArgValue(PLUGIN_MANAGE_VIEW);
-        int pluginSeq = Integer.parseInt(pluginSeqSegment.getText());
+        int pluginSeq = Integer.parseInt(result.getChild(PLUGIN_MANAGE_VIEW).getArg(PLUGIN_MANAGE_VIEW_SEQ).asText());
         // 判断序号是否越界
         PluginContainer container = PluginUtils.getBean(PluginContainer.class);
         if (pluginSeq <= 0 || pluginSeq > container.getPluginCount()) {

@@ -5,10 +5,11 @@ import com.yuier.yuni.core.enums.CommandArgRequireType;
 import com.yuier.yuni.core.model.message.MessageChain;
 import com.yuier.yuni.core.model.message.segment.ImageSegment;
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.event.detector.message.command.CommandDetector;
-import com.yuier.yuni.event.detector.message.command.model.CommandBuilder;
-import com.yuier.yuni.plugin.model.YuniPlugin;
-import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
+import com.yuier.yuni.core.event.matched.CommandResult;
+import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.model.ArgDef;
+import com.yuier.yuni.event.detector.message.command.model.CommandNode;
+import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +33,7 @@ import java.util.Base64;
  */
 
 @Slf4j
-public class YaoWoYiZhi extends CommandPlugin {
+public class YaoWoYiZhi extends CommandNodePlugin {
 
     private static final String YI_ZHI = "一直";
     private static final String TARGET_IMAGE = "图片";
@@ -41,16 +42,20 @@ public class YaoWoYiZhi extends CommandPlugin {
     private static final String 吗 = "吗";
     private static final String[] supportImageEndName = new String[] {"jpg", "png", "jpeg"};
 
+    private static final CommandNode ROOT = CommandNode.builder(YI_ZHI)
+            .description("要我一直")
+            .arg(ArgDef.required(TARGET_IMAGE, "要我一直", CommandArgRequireType.IMAGE))
+            .build();
+
     @Override
-    public CommandDetector getDetector() {
-        return new CommandDetector(CommandBuilder.create(YI_ZHI)
-                .addRequiredArg(TARGET_IMAGE, "要我一直", CommandArgRequireType.IMAGE)
-                .build());
+    public CommandNodeDetector getDetector() {
+        return new CommandNodeDetector(ROOT);
     }
 
     @Override
     public void execute(YuniMessageEvent eventContext) {
-        ImageSegment targetImage = (ImageSegment) eventContext.getCommandMatched().getArgValue(TARGET_IMAGE);
+        CommandResult result = eventContext.getCommandResult();
+        ImageSegment targetImage = result.getArg(TARGET_IMAGE).asImage();
         String imageFileName = targetImage.getFile();
         String imageFileUrl = targetImage.getUrl();
         String imageBase64 = null;

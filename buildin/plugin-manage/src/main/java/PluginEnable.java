@@ -1,7 +1,6 @@
 import com.yuier.yuni.core.enums.UserPermission;
-import com.yuier.yuni.core.model.message.segment.TextSegment;
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.core.event.matched.CommandMatched;
+import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.permission.manage.UserPermissionManager;
 import com.yuier.yuni.plugin.manage.PluginContainer;
 import com.yuier.yuni.plugin.manage.PluginManager;
@@ -14,8 +13,7 @@ import com.yuier.yuni.plugin.util.PluginUtils;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static util.PluginManagerConstants.PLUGIN_MANAGE_DISABLE;
-import static util.PluginManagerConstants.PLUGIN_MANAGE_ENABLE;
+import static util.PluginManagerConstants.*;
 
 /**
  * @Title: PluginEnable
@@ -30,11 +28,10 @@ import static util.PluginManagerConstants.PLUGIN_MANAGE_ENABLE;
 public class PluginEnable {
 
 
-    public void enablePlugin(YuniMessageEvent eventContext, CommandMatched commandMatched) {
+    public void enablePlugin(YuniMessageEvent eventContext, CommandResult result) {
         // 先判断插件序号是否越界
         PluginContainer container = PluginUtils.getBean(PluginContainer.class);
-        TextSegment pluginSeqSegment = (TextSegment) commandMatched.getOptionRequiredArgValue(PLUGIN_MANAGE_ENABLE);
-        int pluginSeq = Integer.parseInt(pluginSeqSegment.getText());
+        int pluginSeq = Integer.parseInt(result.getChild(PLUGIN_MANAGE_ENABLE).getArg(PLUGIN_MANAGE_ENABLE_SEQ).asText());
         if (pluginSeq <= 0 || pluginSeq > container.getPluginCount()) {
             eventContext.getChatSession().response("没有序号为" + pluginSeq + "的插件。");
             return;
@@ -65,10 +62,9 @@ public class PluginEnable {
         eventContext.getChatSession().response("已开启 " + pluginSeq + " 号插件 " + pluginInstance.getPluginName());
     }
 
-    public void disablePlugin(YuniMessageEvent eventContext, CommandMatched commandMatched) {
+    public void disablePlugin(YuniMessageEvent eventContext, CommandResult result) {
         // 先判断插件序号是否越界
-        TextSegment pluginSeqSegment = (TextSegment) commandMatched.getOptionRequiredArgValue(PLUGIN_MANAGE_DISABLE);
-        int pluginSeq = Integer.parseInt(pluginSeqSegment.getText());
+        int pluginSeq = Integer.parseInt(result.getChild(PLUGIN_MANAGE_DISABLE).getArg(PLUGIN_MANAGE_DISABLE_SEQ).asText());
         PluginContainer container = PluginUtils.getBean(PluginContainer.class);
         if (pluginSeq <= 0 || pluginSeq > container.getPluginCount()) {
             eventContext.getChatSession().response("没有序号为" + pluginSeq + "的插件。");

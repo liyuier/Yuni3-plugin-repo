@@ -1,7 +1,7 @@
 import com.yuier.yuni.core.event.YuniMessageEvent;
-import com.yuier.yuni.event.detector.message.command.CommandDetector;
-import com.yuier.yuni.event.detector.message.command.model.CommandBuilder;
-import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
+import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
+import com.yuier.yuni.event.detector.message.command.model.CommandNode;
+import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 
 /**
@@ -12,11 +12,13 @@ import com.yuier.yuni.plugin.util.PluginUtils;
  * @description: 帮助信息输出
  */
 
-public class HelpInfo extends CommandPlugin {
+public class HelpInfo extends CommandNodePlugin {
+
+    private static final CommandNode ROOT = CommandNode.builder("帮助").build();
 
     @Override
-    public CommandDetector getDetector() {
-        return new CommandDetector(CommandBuilder.create("帮助").build());
+    public CommandNodeDetector getDetector() {
+        return new CommandNodeDetector(ROOT);
     }
 
     @Override
