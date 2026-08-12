@@ -16,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class PigImageList {
-    private Integer total;
-    private List<PigImageListElement> images;
+    private Integer code;
+    private String message;
+    private List<PigImageListElement> data;
 }

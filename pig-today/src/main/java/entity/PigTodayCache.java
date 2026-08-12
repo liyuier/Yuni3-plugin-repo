@@ -20,4 +20,5 @@ public class PigTodayCache {
     private String imageTitle;
     private String imageName;
     private String date;
+    private String imageUrl;
 }

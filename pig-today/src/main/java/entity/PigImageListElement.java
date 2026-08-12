@@ -32,4 +32,5 @@ public class PigImageListElement {
     private String filename;
     // 大概是上传时间
     private Long mtime;
+    private String imageUrl;
 }
