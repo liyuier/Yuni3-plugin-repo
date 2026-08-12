@@ -4,7 +4,7 @@ import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 
 import static util.PluginManagerConstants.*;
 
@@ -16,7 +16,7 @@ import static util.PluginManagerConstants.*;
  * @description: 插件管理入口
  */
 
-public class PluginManage extends CommandNodePlugin {
+public class PluginManage extends CommandPlugin {
 
     private PluginShow pluginShow = new PluginShow();
     private PluginEnable pluginEnable = new PluginEnable();

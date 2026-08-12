@@ -4,7 +4,7 @@ import com.yuier.yuni.core.bot.MessageSentResult;
 import com.yuier.yuni.core.event.YuniMessageEvent;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 
 /**
  * @Title: command.HelloCommand
@@ -14,7 +14,7 @@ import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
  * @description:
  */
 
-public class HelloCommand extends CommandNodePlugin {
+public class HelloCommand extends CommandPlugin {
 
     private static final CommandNode ROOT = CommandNode.builder("test").build();
 

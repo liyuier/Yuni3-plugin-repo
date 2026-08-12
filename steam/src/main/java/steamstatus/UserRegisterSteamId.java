@@ -5,7 +5,7 @@ import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 import steamstatus.db.DBHelper;
 import steamstatus.db.UserSteamId;
 import steamstatus.utils.RedisHelper;
@@ -21,7 +21,7 @@ import java.util.List;
  * @description: 用户绑定 steam id
  */
 
-public class UserRegisterSteamId extends CommandNodePlugin {
+public class UserRegisterSteamId extends CommandPlugin {
 
     private static final String STEAM = "steam";
     private static final String 绑定ID = "绑定id";

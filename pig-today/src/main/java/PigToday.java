@@ -8,7 +8,7 @@ import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import entity.PigImageList;
 import entity.PigImageListElement;
@@ -27,7 +27,7 @@ import java.util.Random;
  * @description: 今日猪猪
  */
 
-public class PigToday extends CommandNodePlugin {
+public class PigToday extends CommandPlugin {
 
     private static final String PIG_TODAY = "今日猪猪";
     private static final String TARGET_MEMBER = "目标成员";

@@ -3,7 +3,7 @@ import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import util.TransMap;
 import util.TransferUtil;
@@ -17,7 +17,7 @@ import java.util.List;
  * @Date 2026/1/12 15:21
  * @description: 切噜语转换
  */
-public class ChieruTrans extends CommandNodePlugin {
+public class ChieruTrans extends CommandPlugin {
 
     public static final String CHIERU_TRANS = "切噜";
     public static final String CHIERU_TRANS_ENCODED = "转换";

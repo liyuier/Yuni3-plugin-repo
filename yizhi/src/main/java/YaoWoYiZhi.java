@@ -9,7 +9,7 @@ import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.ArgDef;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,7 @@ import java.util.Base64;
  */
 
 @Slf4j
-public class YaoWoYiZhi extends CommandNodePlugin {
+public class YaoWoYiZhi extends CommandPlugin {
 
     private static final String YI_ZHI = "一直";
     private static final String TARGET_IMAGE = "图片";

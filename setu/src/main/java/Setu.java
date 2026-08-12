@@ -3,7 +3,7 @@ import com.yuier.yuni.core.model.message.segment.ImageSegment;
 import com.yuier.yuni.core.event.YuniMessageEvent;
 import com.yuier.yuni.event.detector.message.command.CommandNodeDetector;
 import com.yuier.yuni.event.detector.message.command.model.CommandNode;
-import com.yuier.yuni.plugin.model.passive.message.CommandNodePlugin;
+import com.yuier.yuni.plugin.model.passive.message.CommandPlugin;
 import com.yuier.yuni.plugin.util.PluginUtils;
 import entity.ApiResponseSetu;
 import entity.LoliconApiResponse;
@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @description: 色图模块
  */
 
-public class Setu extends CommandNodePlugin {
+public class Setu extends CommandPlugin {
 
     private static final String LOLICON_API_V2 = "https://api.lolicon.app/setu/v2";
     private static final CommandNode ROOT = CommandNode.builder("色图").build();
