@@ -31,13 +31,18 @@ public class McServerPinger {
         String serverName = status.getMotd() != null && !status.getMotd().isBlank()
                 ? status.getMotd().replaceAll("§.", "").strip()
                 : addr;
+        String playerListStr = "";
+        if (!status.getPlayerNames().isEmpty()) {
+            playerListStr = "\n在线玩家: " + String.join(", ", status.getPlayerNames());
+        }
         return String.format(
                 "========== MC 服务器状态 ==========\n" +
                 "服务器: %s (%s:%d)\n" +
                 "版本: %s (协议 %d)\n" +
-                "在线人数: %d / %d",
+                "在线人数: %d / %d%s",
                 serverName, host, port,
                 status.getVersionName(), status.getProtocol(),
-                status.getOnline(), status.getMax());
+                status.getOnline(), status.getMax(),
+                playerListStr);
     }
 }
