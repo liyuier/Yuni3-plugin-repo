@@ -102,8 +102,9 @@ public class PluginReloadProcessor {
                     pluginInstance.setIndex(pluginInstance.getIndex() + newPluginInstances.size() - oldPluginInstances.size());
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            // 必须捕获 Throwable：类加载失败常抛 Error，只 catch Exception 会静默穿透
+            log.error("重载插件失败: {}", jarFile.getName(), e);
         }
     }
 
