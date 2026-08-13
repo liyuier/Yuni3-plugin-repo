@@ -1,4 +1,5 @@
 import com.yuier.yuni.core.enums.CommandArgRequireType;
+import com.yuier.yuni.core.enums.UserPermission;
 import com.yuier.yuni.core.event.YuniMessageEvent;
 import com.yuier.yuni.core.event.matched.CommandResult;
 import com.yuier.yuni.event.detector.message.command.CommandDetector;
@@ -40,6 +41,7 @@ public class PluginManage extends CommandPlugin {
                     .build())
             .child(CommandNode.builder(PLUGIN_MANAGE_RELOAD)
                     .description("重载插件")
+                    .permission(UserPermission.ADMIN)
                     .arg(ArgDef.optional(PLUGIN_MANAGE_RELOAD_SEQ, "重载插件", CommandArgRequireType.NUMBER))
                     .build())
             .build();
